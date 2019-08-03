@@ -1,0 +1,20 @@
+{
+    "name": "oshry/php-play-around",
+    "description": "php play around",
+    "authors": [
+        {
+            "name": "oshry",
+            "email": "oshrylevy@gmail.com"
+        }
+    ],
+    "require": {
+        "mustache/mustache": "2.7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Classes\\": "src/Classes/",
+            "Repository\\": "src/Repository/",
+            "Repository2\\": "src/Repository1/"
+        }
+    }
+}
