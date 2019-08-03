@@ -2,10 +2,11 @@ build/PHPExcel.phar
 unitTests/codeCoverage
 analysis
 /application/cache/
+
 /application/logs/
 /media/img/products_pending/
 /media/img/profile_images/
-/application/vendor/
+/vendor/
 /media/assets/node_modules
 ## IDE support
 *.buildpath
