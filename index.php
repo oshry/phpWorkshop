@@ -7,8 +7,16 @@
  */
 session_start();
 require_once './env.php';
-require DOCROOT.'./vendor/autoload.php';
-$config = include 'config/db.php';
+require DOCROOT.'vendor/autoload.php';
+$config = include './config/db.php';
 //singleton db
 $db = Repository\DataRepository::instance($config, 'default');
-die('test11');
+$doc = [];
+
+$doc['doc']['description'] = "blat";
+$view = Classes\View::factory('method', $doc)->render();
+
+
+
+die($view);
+//die('test11'.DOCROOT.'vendor/autoload.php');

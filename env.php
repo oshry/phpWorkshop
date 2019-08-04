@@ -1,7 +1,8 @@
 <?php
 
 define('DOCROOT', realpath(dirname(__FILE__)).DIRECTORY_SEPARATOR);
-//define('THUMBS', realpath(DOCROOT.'assets').DIRECTORY_SEPARATOR);
+define('BASE', "http://" . $_SERVER['SERVER_NAME']."/php7/");
+define('VIEW', DOCROOT."src/Views/");
 
 // -- Locale setup ---------------------------------------------
 

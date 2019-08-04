@@ -1,16 +1,12 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php //defined('SYSPATH') OR die('No direct script access.');
 /**
  * Acts as an object wrapper for HTML pages with embedded PHP, called "views".
  * Variables can be assigned with the view object and referenced locally within
  * the view.
- *
- * @package    Kohana
- * @category   Base
- * @author     Kohana Team
- * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaframework.org/license
- */
-class Kohana_View {
+ **/
+namespace Classes;
+
+class View {
 
     // Array of global variables
     protected static $_global_data = array();
@@ -37,21 +33,35 @@ class Kohana_View {
      *
      *     $output = View::capture($file, $data);
      *
-     * @param   string  $kohana_view_filename   filename
-     * @param   array   $kohana_view_data       variables
+     * @param   string  $view_filename   filename
+     * @param   array   $view_data       variables
      * @return  string
      * @throws  Exception
      */
-    protected static function capture($kohana_view_filename, array $kohana_view_data)
-    {
-        // Import the view variables to local namespace
-        extract($kohana_view_data, EXTR_SKIP);
+    public static function convert_array_to_obj_recursive($a) {
+        if (is_array($a) ) {
+            foreach($a as $k => $v) {
+                if (is_integer($k)) {
+                    // only need this if you want to keep the array indexes separate
+                    // from the object notation: eg. $o->{1}
+                    $a['index'][$k] = self::convert_array_to_obj_recursive($v);
+                }
+                else {
+                    $a[$k] = self::convert_array_to_obj_recursive($v);
+                }
+            }
 
-        if (View::$_global_data)
-        {
-            // Import the global view variables to local namespace
-            extract(View::$_global_data, EXTR_SKIP | EXTR_REFS);
+            return (object) $a;
         }
+
+        // else maintain the type of $a
+        return $a;
+    }
+    protected static function capture($view_filename, array $view_data)
+    {
+        View::set_global($view_data);
+        extract(View::$_global_data, EXTR_SKIP);
+        $doc = View::convert_array_to_obj_recursive($doc);
 
         // Capture the view output
         ob_start();
@@ -59,7 +69,7 @@ class Kohana_View {
         try
         {
             // Load the view within the current scope
-            include $kohana_view_filename;
+            include $view_filename;
         }
         catch (Exception $e)
         {
@@ -162,7 +172,7 @@ class Kohana_View {
      *
      * @param   string  $key    variable name
      * @return  mixed
-     * @throws  Kohana_Exception
+     * @throws  Exception
      */
     public function & __get($key)
     {
@@ -176,8 +186,8 @@ class Kohana_View {
         }
         else
         {
-            throw new Kohana_Exception('View variable is not set: :var',
-                array(':var' => $key));
+//            throw new Exception('View variable is not set: :var',
+//                array(':var' => $key));
         }
     }
 
@@ -243,8 +253,8 @@ class Kohana_View {
              * We use this method here because it's impossible to throw an
              * exception from __toString().
              */
-            $error_response = Kohana_Exception::_handler($e);
-
+            $error_response = Exception::_handler($e);
+//
             return $error_response->body();
         }
     }
@@ -258,17 +268,19 @@ class Kohana_View {
      * @return  View
      * @throws  View_Exception
      */
+
     public function set_filename($file)
     {
-        if (($path = Kohana::find_file('views', $file)) === FALSE)
+        if (is_file(VIEW.$file.".php"))
         {
-            throw new View_Exception('The requested view :file could not be found', array(
-                ':file' => $file,
-            ));
+            // This path has a file, add it to the list
+            // Store the file path locally
+            $this->_file = VIEW.$file.".php";
+        }else{
+            die('The requested view :file could not be found'.VIEW.$file.".php");
         }
 
-        // Store the file path locally
-        $this->_file = $path;
+
 
         return $this;
     }
@@ -352,10 +364,13 @@ class Kohana_View {
 
         if (empty($this->_file))
         {
-            throw new View_Exception('You must set the file to use within your view before rendering');
+//            throw new View_Exception('You must set the file to use within your view before rendering');
+            die('You must set the file to use within your view before rendering');
         }
 
         // Combine local and global data and capture the output
+//        die($this->_file);
+//        die(print_r($this->_data));
         return View::capture($this->_file, $this->_data);
     }
 
